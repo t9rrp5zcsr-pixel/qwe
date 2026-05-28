@@ -6,11 +6,9 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# CORS для твоего сайта
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -51,7 +49,3 @@ async def chat(request: ChatRequest):
 @app.get("/")
 def root():
     return {"status": "ok", "message": "Freemodel proxy is running"}
-
-@app.get("/health")
-def health():
-    return {"status": "alive"}
