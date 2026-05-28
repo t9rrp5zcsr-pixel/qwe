@@ -51,3 +51,7 @@ async def chat(request: ChatRequest):
 @app.get("/")
 def root():
     return {"status": "ok", "message": "Freemodel proxy is running"}
+
+@app.get("/health")
+def health():
+    return {"status": "alive"}
