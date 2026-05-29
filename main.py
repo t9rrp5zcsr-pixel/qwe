@@ -18,17 +18,17 @@ API_URL = "https://api.freemodel.dev/v1/chat/completions"
 
 class ChatRequest(BaseModel):
     messages: list
-    model: str = "gpt-5.5"
+    model: str = "gpt-3.5-turbo"
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.post(
                 API_URL,
                 headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {API_KEY}"
+                    "Authorization": f"Bearer {API_KEY}",
+                    "Content-Type": "application/json"
                 },
                 json={
                     "model": request.model,
@@ -43,9 +43,15 @@ async def chat(request: ChatRequest):
             
             data = response.json()
             return {"content": data["choices"][0]["message"]["content"]}
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="API timeout")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 def root():
     return {"status": "ok", "message": "Freemodel proxy is running"}
+
+@app.get("/health")
+def health():
+    return {"status": "alive"}
